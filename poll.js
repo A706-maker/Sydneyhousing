@@ -44,6 +44,7 @@ document.getElementById("start-btn").onclick = startQuiz;
 document.getElementById("retry-btn").onclick = restartQuiz;
 document.getElementById("home-btn").onclick = () => {
   window.location.href = "index.html"; 
+};
 
 
 function startQuiz() {
@@ -114,7 +115,7 @@ function restartQuiz() {
   currentQuestion = 0;
   score = 0;
 
-  resultScreen.classList.add;
+  resultScreen.classList.add("hidden");
   pollContainer.classList.remove("hidden");
   progressContainer.classList.remove("hidden");
 
