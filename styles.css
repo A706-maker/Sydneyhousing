@@ -273,6 +273,13 @@ footer {
   align-self: center;
 }
 
+.content-section {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 20px;
+}
+
 .content-section.reverse {
   flex-direction: row-reverse;
 }
@@ -283,15 +290,13 @@ footer {
 
 .image-content {
   flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .image-content img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
+  max-width: 300px;
 }
-
-  
 
 
   
