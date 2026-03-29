@@ -1,50 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Market Rates</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Rates — Sydney Housing Watch</title>
     <link rel="stylesheet" href="styles.css">
-    <head>
-      <body>
+  </head>
+  <body>
 
-        <nav>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="site-logo">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text">Sydney Housing Watch</span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <nav id="main-nav">
           <a href="index.html">Home</a>
           <a href="page1.html">Social Consequences</a>
           <a href="page2.html">Economic Consequences</a>
-          <a href="page3.html">Market Rates</a>
+          <a href="page3.html" class="active">Market Rates</a>
           <a href="page4.html">Proposed Solutions</a>
         </nav>
+      </div>
+    </header>
 
-        <div class="container">
-          <h2>How Current Affairs Affect Market Rates</h2>
-          <div class="image-text">
-            <img src="Current-Affairs.png" alt="Infographic showing market rate imapacts" style="width:75%; height:1000px;">
-          </div>
+    <main>
+
+      <div class="container">
+        <h2>How Current Affairs Affect Market Rates</h2>
+        <div class="image-text">
+          <img src="Current-Affairs.png" alt="Infographic showing market rate impacts" style="width:75%; height:auto;">
         </div>
+      </div>
 
-        <div class="container">
-          <h2>Historical and Modern Trends</h2>
-          <div class="card">
-            <img src="Real-median-houseprices.png" alt="House prices over the past 30 years" style="width:50%; height:500px;">
-            <p>This graph details the growing median house prices in capital cities across Australia. This shows how unaffordable Australia is 
-            as it is placed ahead of all other states by a far margin.</p>
-          </div>
+      <div class="container">
+        <h2>Historical and Modern Trends</h2>
+        <div class="card">
+          <img src="Real-median-houseprices.png" alt="Real median house prices over 30 years" style="width:100%; max-width:700px; height:auto; display:block; margin:0 auto 1rem;">
+          <p>This graph details the growing median house prices in capital cities across Australia, showing how unaffordable Sydney has become compared to all other states by a considerable margin.</p>
         </div>
+      </div>
 
-        <div class="container">
-          <h2>Future Predictions</h2>
-          <div class="card">
-            <p>Sydney’s median house price is forecast to continue its rise, and could potentially reach $2million by late 2026 and 2027. 
-              The median house price is expected to rise by $102,200 across all the combined Australian Capital cities whilst the unit prices have been forecasted to increase from $52,200 (as of September 2025) to $759,112 by the end of 2026.
-              Most property experts are expecting a “grind higher” rather than a rapid boom, with annual growth rates settling between 5% and 7%. By 2030 the average house price is forecasted to reach $2.4m - which is nearly $1m more than today - if the recent five year pattern repeats.
-
-</p>
-          </div>
+      <div class="container">
+        <h2>Future Predictions</h2>
+        <div class="card">
+          <p>Sydney's median house price is forecast to continue rising, potentially reaching $2 million by late 2026 or 2027.
+            The median house price is expected to rise by $102,200 across all combined Australian capital cities, whilst unit prices have been forecast to increase from $52,200 (as of September 2025) to $759,112 by the end of 2026.
+            Most property experts are expecting a "grind higher" rather than a rapid boom, with annual growth rates settling between 5% and 7%. By 2030, the average house price is forecast to reach $2.4 million — nearly $1 million more than today — if the recent five-year pattern repeats.
+          </p>
         </div>
+      </div>
 
-        <footer>
-          © 2026 Sydney Housing Watch Research Foundation. All rights reserved. 
-        </footer>
-      </body>
-    </head>
-  </head>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-social">
+          <a href="#">Twitter / X</a>
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="index.html#contact">Contact Us</a>
+        </div>
+        <p class="footer-copy">© 2026 Sydney Housing Watch Research Foundation. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('main-nav');
+      toggle.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open);
+        toggle.textContent = open ? '✕' : '☰';
+      });
+    </script>
+
+  </body>
 </html>
