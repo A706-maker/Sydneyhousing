@@ -1,51 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Economic Consequences</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Consequences — Sydney Housing Watch</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
 
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="page1.html">Social Consequences</a>
-      <a href="page2.html">Economic Consequences</a>
-      <a href="page3.html">Market Rates</a>
-      <a href="page4.html">Proposed Solutions</a>
-    </nav>
-
-    <div class="container">
-      <h2>The First-home buyer Crisis</h2>
-      <video controls width="100%">
-        <source src="First home buyer crisis.mp4" type="video/mp4">
-        Your browser does not support this video tag
-      </video>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="site-logo">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text">Sydney Housing Watch</span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <nav id="main-nav">
+          <a href="index.html">Home</a>
+          <a href="page1.html">Social Consequences</a>
+          <a href="page2.html" class="active">Economic Consequences</a>
+          <a href="page3.html">Market Rates</a>
+          <a href="page4.html">Proposed Solutions</a>
+        </nav>
       </div>
-    </div>
+    </header>
 
-    <div class="container">
-      <h2>Income vs. Housing Cost</h2>
-      <div class="card">
-        <p>In March 2002, the cost of an average house in Sydney was 8.3 times that of the average annual full time wage. While this is of course expensive, the rate which it has been raised to as of 2024 makes it look incredibly cheap.
-          In June 2024, the price of that average dwelling in Sydney is now equivalent to 14.4 years earning the average wage in NSW. To put it more simply, residents in Sydney need to pay $615,000 more in today’s dollars than 20years ago
-</p>
-      </div>
-    </div>
+    <main>
 
-    <div class="container">
-      <h2>Mortgage Stress and Afforadability</h2>
-      <div class="card">
-        <p> As housing prices increase all throughout Sydney, the affordability rates decrease, therefore increasing mortgage stress amongst buyers.
-          As of early 2026, mortgage stress remains high, with approximately 1.18million to 1.6million mortgage holders (24%-30%)  are considered to be at risk of mortgage stress, which is defined as paying more than 30% of their disposable income on housing.
-          While stress levels may have decreased in 2026 from the peak levels that were reached in 2024-2025, they remain a top financial worry, which heavily impacts households with lower incomes.
-          Sydney is one the the most affected cities by this as the entry-level housing requires over 57% of income to service.
-</p>
+      <div class="container">
+        <h2>The First-Home Buyer Crisis</h2>
+        <video controls>
+          <source src="First home buyer crisis.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-    </div>
+
+      <div class="container">
+        <h2>Income vs. Housing Cost</h2>
+        <div class="card">
+          <p>In March 2002, the cost of an average house in Sydney was 8.3 times that of the average annual full-time wage. While this is of course expensive, the rate at which it has risen makes it look incredibly cheap in comparison.
+            In June 2024, the price of an average dwelling in Sydney is now equivalent to 14.4 years of earning the average wage in NSW. To put it simply, residents in Sydney need to pay $615,000 more in today's dollars than they would have 20 years ago.
+          </p>
+        </div>
+      </div>
+
+      <div class="container">
+        <h2>Mortgage Stress and Affordability</h2>
+        <div class="card">
+          <p>As housing prices increase across Sydney, affordability rates decrease, therefore increasing mortgage stress amongst buyers.
+            As of early 2026, mortgage stress remains high, with approximately 1.18 million to 1.6 million mortgage holders (24%–30%) considered to be at risk of mortgage stress, defined as paying more than 30% of their disposable income on housing.
+            While stress levels may have decreased in 2026 from the peak levels reached in 2024–2025, they remain a top financial worry, heavily impacting lower-income households.
+            Sydney is one of the most affected cities, with entry-level housing requiring over 57% of income to service.
+          </p>
+        </div>
+      </div>
+
+    </main>
 
     <footer>
-      © 2026 Sydney Housing Watch Research Foundation. All rights reserved.
+      <div class="footer-inner">
+        <div class="footer-social">
+          <a href="#">Twitter / X</a>
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="index.html#contact">Contact Us</a>
+        </div>
+        <p class="footer-copy">© 2026 Sydney Housing Watch Research Foundation. All rights reserved.</p>
+      </div>
     </footer>
-    
+
+    <script>
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('main-nav');
+      toggle.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open);
+        toggle.textContent = open ? '✕' : '☰';
+      });
+    </script>
+
   </body>
 </html>

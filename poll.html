@@ -1,34 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Poll</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing Quiz — Sydney Housing Watch</title>
     <link rel="stylesheet" href="styles.css">
     <script src="poll.js" defer></script>
   </head>
   <body>
 
-    <!-- Start Screen -->
-    <div id="start-screen">
-      <h1>Sydney Housing Quiz</h1>
-      <p>Test your knowledge</p>
-      <button id="start-btn">Start Quiz</button>
-    </div>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="site-logo">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text">Sydney Housing Watch</span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <nav id="main-nav">
+          <a href="index.html">Home</a>
+          <a href="page1.html">Social Consequences</a>
+          <a href="page2.html">Economic Consequences</a>
+          <a href="page3.html">Market Rates</a>
+          <a href="page4.html">Proposed Solutions</a>
+        </nav>
+      </div>
+    </header>
 
-    <!-- Progress Bar -->
-    <div id="progress-container" class="hidden">
-      <div id="progress-bar"></div>
-    </div>
+    <main>
 
-    <!-- Quiz Questions -->
-    <div id="poll-container" class="hidden"></div>
+      <!-- Start Screen -->
+      <div id="start-screen">
+        <h1>Sydney Housing Quiz</h1>
+        <p>Test your knowledge of Sydney's housing affordability crisis.</p>
+        <button id="start-btn">Start Quiz</button>
+      </div>
 
-    <!-- Final Score Screen -->
-    <div id="result-screen" class="hidden">
-      <h2>Your Score</h2>
-      <p id="score-text"></p>
-      <button id="retry-btn">Retake Quiz</button>
-      <button id="home-btn">Back to Home</button>
-    </div>
+      <!-- Progress Bar -->
+      <div id="progress-container" class="hidden">
+        <div id="progress-bar"></div>
+      </div>
+
+      <!-- Quiz Questions -->
+      <div id="poll-container" class="hidden"></div>
+
+      <!-- Final Score Screen -->
+      <div id="result-screen" class="hidden">
+        <h2>Your Score</h2>
+        <p id="score-text"></p>
+        <button id="retry-btn">Retake Quiz</button>
+        <button id="home-btn">Back to Home</button>
+      </div>
+
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-social">
+          <a href="#">Twitter / X</a>
+          <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
+          <a href="index.html#contact">Contact Us</a>
+        </div>
+        <p class="footer-copy">© 2026 Sydney Housing Watch Research Foundation. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('main-nav');
+      toggle.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open);
+        toggle.textContent = open ? '✕' : '☰';
+      });
+    </script>
 
   </body>
 </html>
