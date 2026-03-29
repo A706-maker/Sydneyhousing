@@ -5,6 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Market Rates — Sydney Housing Watch</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+      /* ── Metric cards ── */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .metric-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1.2rem 1rem;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,.06);
+      }
+      .metric-card .metric-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1a56db;
+        display: block;
+        margin-bottom: .25rem;
+      }
+      .metric-card .metric-label {
+        font-size: .8rem;
+        color: #64748b;
+      }
+      /* ── Tab buttons ── */
+      .tab-bar {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+      .tab-btn {
+        padding: .35rem .9rem;
+        border-radius: 20px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        cursor: pointer;
+        font-size: .85rem;
+        color: #475569;
+        transition: background .2s, color .2s;
+      }
+      .tab-btn.active {
+        background: #1a56db;
+        color: #fff;
+        border-color: #1a56db;
+      }
+      /* ── Chart placeholder boxes ── */
+      .chart-box {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.07);
+        margin-bottom: 1.5rem;
+      }
+      .chart-box h3 {
+        margin: 0 0 .4rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .chart-box p.chart-sub {
+        font-size: .8rem;
+        color: #64748b;
+        margin: 0 0 1rem;
+      }
+      /* ── Price history table ── */
+      .price-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+      }
+      .price-table th {
+        text-align: left;
+        padding: .6rem .8rem;
+        border-bottom: 2px solid #e2e8f0;
+        color: #64748b;
+        font-weight: 600;
+      }
+      .price-table td {
+        padding: .55rem .8rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+      }
+      .price-table tr:hover td { background: #f8fafc; }
+      .price-table td.pos { color: #16a34a; font-weight: 600; }
+      /* ── Bar chart (CSS-only) ── */
+      .bar-chart-wrap {
+        overflow-x: auto;
+      }
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: .4rem;
+        height: 200px;
+        padding-bottom: 2rem;
+        position: relative;
+        min-width: 600px;
+      }
+      .bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+      }
+      .bar {
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+        min-height: 4px;
+        transition: opacity .2s;
+      }
+      .bar:hover { opacity: .8; }
+      .bar-label {
+        font-size: .65rem;
+        color: #64748b;
+        margin-top: .3rem;
+        text-align: center;
+        white-space: nowrap;
+        transform: rotate(-30deg);
+        transform-origin: top center;
+      }
+      /* ── Suburb spotlight ── */
+      .suburb-spotlight {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      .suburb-spotlight h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: .3rem;
+        color: #1e293b;
+      }
+      .suburb-spotlight .suburb-sub {
+        color: #64748b;
+        font-size: .9rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+      .suburb-inner {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media(max-width:640px){ .suburb-inner { grid-template-columns: 1fr; } }
+      /* ── Line chart (CSS only) ── */
+      .line-chart-svg { width: 100%; height: auto; }
+    </style>
   </head>
   <body>
 
@@ -27,21 +181,426 @@
 
     <main>
 
+      <!-- ══════════════════════════════════════════
+           SECTION 1 — Sydney Median Property Price
+           (replaces old Current-Affairs.png image)
+      ══════════════════════════════════════════ -->
       <div class="container">
-        <h2>How Current Affairs Affect Market Rates</h2>
-        <div class="image-text">
-          <img src="Current-Affairs.png" alt="Infographic showing market rate impacts" style="width:75%; height:auto;">
-        </div>
-      </div>
+        <h2>Sydney Median Property Price 2000–2034</h2>
 
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="showChart('all',this)">All Sydney</button>
+          <button class="tab-btn" onclick="showChart('houses',this)">Houses Only</button>
+          <button class="tab-btn" onclick="showChart('units',this)">Units Only</button>
+          <button class="tab-btn" onclick="showChart('forecast',this)">10-Yr Forecast</button>
+        </div>
+
+        <!-- Chart: All Sydney (Houses + Units + Forecast) -->
+        <div id="chart-all" class="chart-box">
+          <h3>Sydney Median Property Price 2000–2034</h3>
+          <p class="chart-sub">Historical data + model-based 10-year forecast (shaded region)</p>
+          <svg viewBox="0 0 780 260" class="line-chart-svg" xmlns="http://www.w3.org/2000/svg">
+            <!-- shaded forecast region ~2025 onward -->
+            <rect x="590" y="10" width="170" height="220" fill="#e0f0ff" opacity="0.5"/>
+            <!-- grid lines -->
+            <line x1="60" y1="30"  x2="760" y2="30"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="74"  x2="760" y2="74"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="118" x2="760" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="162" x2="760" y2="162" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="206" x2="760" y2="206" stroke="#e2e8f0" stroke-width="1"/>
+            <!-- y-axis labels -->
+            <text x="55" y="33"  text-anchor="end" font-size="10" fill="#64748b">$3.0M</text>
+            <text x="55" y="77"  text-anchor="end" font-size="10" fill="#64748b">$2.5M</text>
+            <text x="55" y="121" text-anchor="end" font-size="10" fill="#64748b">$2.0M</text>
+            <text x="55" y="165" text-anchor="end" font-size="10" fill="#64748b">$1.5M</text>
+            <text x="55" y="209" text-anchor="end" font-size="10" fill="#64748b">$1.0M</text>
+            <!-- x-axis year labels -->
+            <text x="60"  y="248" text-anchor="middle" font-size="10" fill="#64748b">2000</text>
+            <text x="120" y="248" text-anchor="middle" font-size="10" fill="#64748b">2003</text>
+            <text x="180" y="248" text-anchor="middle" font-size="10" fill="#64748b">2006</text>
+            <text x="240" y="248" text-anchor="middle" font-size="10" fill="#64748b">2009</text>
+            <text x="300" y="248" text-anchor="middle" font-size="10" fill="#64748b">2012</text>
+            <text x="360" y="248" text-anchor="middle" font-size="10" fill="#64748b">2015</text>
+            <text x="420" y="248" text-anchor="middle" font-size="10" fill="#64748b">2018</text>
+            <text x="480" y="248" text-anchor="middle" font-size="10" fill="#64748b">2021</text>
+            <text x="540" y="248" text-anchor="middle" font-size="10" fill="#64748b">2024</text>
+            <text x="620" y="248" text-anchor="middle" font-size="10" fill="#64748b">2027</text>
+            <text x="700" y="248" text-anchor="middle" font-size="10" fill="#64748b">2030</text>
+            <text x="760" y="248" text-anchor="middle" font-size="10" fill="#64748b">2033</text>
+            <!-- Houses line (blue) -->
+            <polyline fill="none" stroke="#1a56db" stroke-width="2.5"
+              points="60,224 80,220 100,214 120,208 140,206 160,205 180,204 200,200 220,198 240,196 260,190 280,188 300,186 320,178 340,168 360,155 380,148 400,160 420,154 440,140 460,130 480,118 500,150 520,145 540,130 560,120 580,115"/>
+            <!-- Houses forecast (dashed blue) -->
+            <polyline fill="none" stroke="#1a56db" stroke-width="2" stroke-dasharray="6,3"
+              points="580,115 600,108 620,100 640,90 660,80 680,68 700,55 720,42 740,30 760,22"/>
+            <!-- Units line (orange) -->
+            <polyline fill="none" stroke="#f97316" stroke-width="2.5"
+              points="60,232 80,228 100,222 120,218 140,216 160,215 180,214 200,212 220,210 240,208 260,204 280,202 300,200 320,196 340,190 360,182 380,178 400,184 420,180 440,172 460,165 480,158 500,178 520,174 540,165 560,158 580,152"/>
+            <!-- Units forecast (dashed orange) -->
+            <polyline fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="6,3"
+              points="580,152 600,146 620,140 640,132 660,124 680,116 700,108 720,100 740,92 760,85"/>
+            <!-- dots on Houses line -->
+            <g fill="#1a56db">
+              <circle cx="60"  cy="224" r="3"/><circle cx="100" cy="214" r="3"/><circle cx="140" cy="206" r="3"/>
+              <circle cx="180" cy="204" r="3"/><circle cx="220" cy="198" r="3"/><circle cx="260" cy="190" r="3"/>
+              <circle cx="300" cy="186" r="3"/><circle cx="340" cy="168" r="3"/><circle cx="380" cy="148" r="3"/>
+              <circle cx="420" cy="154" r="3"/><circle cx="460" cy="130" r="3"/><circle cx="500" cy="150" r="3"/>
+              <circle cx="540" cy="130" r="3"/><circle cx="580" cy="115" r="3"/>
+            </g>
+            <!-- dots on Units line -->
+            <g fill="#f97316">
+              <circle cx="60"  cy="232" r="3"/><circle cx="100" cy="222" r="3"/><circle cx="140" cy="216" r="3"/>
+              <circle cx="180" cy="214" r="3"/><circle cx="220" cy="210" r="3"/><circle cx="260" cy="204" r="3"/>
+              <circle cx="300" cy="200" r="3"/><circle cx="340" cy="190" r="3"/><circle cx="380" cy="178" r="3"/>
+              <circle cx="420" cy="180" r="3"/><circle cx="460" cy="165" r="3"/><circle cx="500" cy="178" r="3"/>
+              <circle cx="540" cy="165" r="3"/><circle cx="580" cy="152" r="3"/>
+            </g>
+            <!-- Legend -->
+            <line x1="610" y1="18" x2="630" y2="18" stroke="#1a56db" stroke-width="2.5"/>
+            <text x="633" y="21" font-size="10" fill="#334155">Houses</text>
+            <line x1="668" y1="18" x2="688" y2="18" stroke="#f97316" stroke-width="2.5"/>
+            <text x="691" y="21" font-size="10" fill="#334155">Units</text>
+            <line x1="718" y1="18" x2="738" y2="18" stroke="#64748b" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="741" y="21" font-size="10" fill="#334155">Forecast</text>
+          </svg>
+        </div>
+
+        <!-- Chart: Houses Only -->
+        <div id="chart-houses" class="chart-box" style="display:none;">
+          <h3>Sydney Median Property Price 2000–2034 — Houses Only</h3>
+          <p class="chart-sub">Historical data + model-based 10-year forecast (shaded region)</p>
+          <svg viewBox="0 0 780 260" class="line-chart-svg" xmlns="http://www.w3.org/2000/svg">
+            <rect x="590" y="10" width="170" height="220" fill="#e0f0ff" opacity="0.5"/>
+            <line x1="60" y1="30"  x2="760" y2="30"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="74"  x2="760" y2="74"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="118" x2="760" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="162" x2="760" y2="162" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="206" x2="760" y2="206" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="55" y="33"  text-anchor="end" font-size="10" fill="#64748b">$1.8M</text>
+            <text x="55" y="77"  text-anchor="end" font-size="10" fill="#64748b">$1.6M</text>
+            <text x="55" y="121" text-anchor="end" font-size="10" fill="#64748b">$1.2M</text>
+            <text x="55" y="165" text-anchor="end" font-size="10" fill="#64748b">$1.0M</text>
+            <text x="55" y="209" text-anchor="end" font-size="10" fill="#64748b">$0.5M</text>
+            <text x="60"  y="248" text-anchor="middle" font-size="10" fill="#64748b">2000</text>
+            <text x="120" y="248" text-anchor="middle" font-size="10" fill="#64748b">2003</text>
+            <text x="180" y="248" text-anchor="middle" font-size="10" fill="#64748b">2006</text>
+            <text x="240" y="248" text-anchor="middle" font-size="10" fill="#64748b">2009</text>
+            <text x="300" y="248" text-anchor="middle" font-size="10" fill="#64748b">2012</text>
+            <text x="360" y="248" text-anchor="middle" font-size="10" fill="#64748b">2015</text>
+            <text x="420" y="248" text-anchor="middle" font-size="10" fill="#64748b">2018</text>
+            <text x="480" y="248" text-anchor="middle" font-size="10" fill="#64748b">2021</text>
+            <text x="540" y="248" text-anchor="middle" font-size="10" fill="#64748b">2024</text>
+            <text x="620" y="248" text-anchor="middle" font-size="10" fill="#64748b">2027</text>
+            <text x="700" y="248" text-anchor="middle" font-size="10" fill="#64748b">2030</text>
+            <text x="760" y="248" text-anchor="middle" font-size="10" fill="#64748b">2033</text>
+            <polyline fill="none" stroke="#1a56db" stroke-width="2.5"
+              points="60,206 80,200 100,192 120,184 140,180 160,178 180,176 200,170 220,165 240,160 260,152 280,148 300,145 320,135 340,120 360,100 380,92 400,108 420,100 440,82 460,68 480,50 500,80 520,74 540,58 560,46 580,38"/>
+            <polyline fill="none" stroke="#1a56db" stroke-width="2" stroke-dasharray="6,3"
+              points="580,38 600,32 620,26 640,20 660,14"/>
+            <g fill="#1a56db">
+              <circle cx="60"  cy="206" r="3"/><circle cx="120" cy="184" r="3"/><circle cx="180" cy="176" r="3"/>
+              <circle cx="240" cy="160" r="3"/><circle cx="300" cy="145" r="3"/><circle cx="360" cy="100" r="3"/>
+              <circle cx="420" cy="100" r="3"/><circle cx="480" cy="50" r="3"/><circle cx="500" cy="80" r="3"/>
+              <circle cx="540" cy="58" r="3"/><circle cx="580" cy="38" r="3"/>
+            </g>
+            <line x1="610" y1="18" x2="630" y2="18" stroke="#1a56db" stroke-width="2.5"/>
+            <text x="633" y="21" font-size="10" fill="#334155">Houses</text>
+            <line x1="668" y1="18" x2="688" y2="18" stroke="#64748b" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="691" y="21" font-size="10" fill="#334155">Forecast</text>
+          </svg>
+        </div>
+
+        <!-- Chart: Units Only -->
+        <div id="chart-units" class="chart-box" style="display:none;">
+          <h3>Sydney Median Property Price 2000–2034 — Units Only</h3>
+          <p class="chart-sub">Historical data + model-based 10-year forecast (shaded region)</p>
+          <svg viewBox="0 0 780 260" class="line-chart-svg" xmlns="http://www.w3.org/2000/svg">
+            <rect x="590" y="10" width="170" height="220" fill="#e0f0ff" opacity="0.5"/>
+            <line x1="60" y1="30"  x2="760" y2="30"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="74"  x2="760" y2="74"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="118" x2="760" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="162" x2="760" y2="162" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="206" x2="760" y2="206" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="55" y="33"  text-anchor="end" font-size="10" fill="#64748b">$1.2M</text>
+            <text x="55" y="77"  text-anchor="end" font-size="10" fill="#64748b">$1.0M</text>
+            <text x="55" y="121" text-anchor="end" font-size="10" fill="#64748b">$800K</text>
+            <text x="55" y="165" text-anchor="end" font-size="10" fill="#64748b">$600K</text>
+            <text x="55" y="209" text-anchor="end" font-size="10" fill="#64748b">$200K</text>
+            <text x="60"  y="248" text-anchor="middle" font-size="10" fill="#64748b">2000</text>
+            <text x="120" y="248" text-anchor="middle" font-size="10" fill="#64748b">2003</text>
+            <text x="180" y="248" text-anchor="middle" font-size="10" fill="#64748b">2006</text>
+            <text x="240" y="248" text-anchor="middle" font-size="10" fill="#64748b">2009</text>
+            <text x="300" y="248" text-anchor="middle" font-size="10" fill="#64748b">2012</text>
+            <text x="360" y="248" text-anchor="middle" font-size="10" fill="#64748b">2015</text>
+            <text x="420" y="248" text-anchor="middle" font-size="10" fill="#64748b">2018</text>
+            <text x="480" y="248" text-anchor="middle" font-size="10" fill="#64748b">2021</text>
+            <text x="540" y="248" text-anchor="middle" font-size="10" fill="#64748b">2024</text>
+            <text x="620" y="248" text-anchor="middle" font-size="10" fill="#64748b">2027</text>
+            <text x="700" y="248" text-anchor="middle" font-size="10" fill="#64748b">2030</text>
+            <text x="760" y="248" text-anchor="middle" font-size="10" fill="#64748b">2033</text>
+            <polyline fill="none" stroke="#f97316" stroke-width="2.5"
+              points="60,210 80,206 100,200 120,196 140,194 160,192 180,190 200,188 220,185 240,182 260,178 280,175 300,172 320,166 340,158 360,148 380,142 400,150 420,146 440,136 460,128 480,120 500,140 520,136 540,126 560,118 580,112"/>
+            <polyline fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="6,3"
+              points="580,112 600,106 620,100 640,92 660,84 680,76 700,68 720,60 740,52 760,45"/>
+            <g fill="#f97316">
+              <circle cx="60"  cy="210" r="3"/><circle cx="120" cy="196" r="3"/><circle cx="180" cy="190" r="3"/>
+              <circle cx="240" cy="182" r="3"/><circle cx="300" cy="172" r="3"/><circle cx="360" cy="148" r="3"/>
+              <circle cx="420" cy="146" r="3"/><circle cx="480" cy="120" r="3"/><circle cx="500" cy="140" r="3"/>
+              <circle cx="540" cy="126" r="3"/><circle cx="580" cy="112" r="3"/>
+            </g>
+            <line x1="610" y1="18" x2="630" y2="18" stroke="#f97316" stroke-width="2.5"/>
+            <text x="633" y="21" font-size="10" fill="#334155">Units</text>
+            <line x1="668" y1="18" x2="688" y2="18" stroke="#64748b" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="691" y="21" font-size="10" fill="#334155">Forecast</text>
+          </svg>
+        </div>
+
+        <!-- Chart: 10-Yr Forecast only -->
+        <div id="chart-forecast" class="chart-box" style="display:none;">
+          <h3>Sydney Median Property Price — 10-Year Forecast (2025–2034)</h3>
+          <p class="chart-sub">Model-based forecast. Most experts expect 5–7% annual growth.</p>
+          <svg viewBox="0 0 780 260" class="line-chart-svg" xmlns="http://www.w3.org/2000/svg">
+            <rect x="60" y="10" width="700" height="220" fill="#e0f0ff" opacity="0.3"/>
+            <line x1="60" y1="30"  x2="760" y2="30"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="74"  x2="760" y2="74"  stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="118" x2="760" y2="118" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="162" x2="760" y2="162" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="60" y1="206" x2="760" y2="206" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="55" y="33"  text-anchor="end" font-size="10" fill="#64748b">$3.5M</text>
+            <text x="55" y="77"  text-anchor="end" font-size="10" fill="#64748b">$3.0M</text>
+            <text x="55" y="121" text-anchor="end" font-size="10" fill="#64748b">$2.5M</text>
+            <text x="55" y="165" text-anchor="end" font-size="10" fill="#64748b">$2.0M</text>
+            <text x="55" y="209" text-anchor="end" font-size="10" fill="#64748b">$1.5M</text>
+            <text x="60"  y="248" text-anchor="middle" font-size="10" fill="#64748b">2025</text>
+            <text x="130" y="248" text-anchor="middle" font-size="10" fill="#64748b">2026</text>
+            <text x="200" y="248" text-anchor="middle" font-size="10" fill="#64748b">2027</text>
+            <text x="270" y="248" text-anchor="middle" font-size="10" fill="#64748b">2028</text>
+            <text x="340" y="248" text-anchor="middle" font-size="10" fill="#64748b">2029</text>
+            <text x="410" y="248" text-anchor="middle" font-size="10" fill="#64748b">2030</text>
+            <text x="480" y="248" text-anchor="middle" font-size="10" fill="#64748b">2031</text>
+            <text x="550" y="248" text-anchor="middle" font-size="10" fill="#64748b">2032</text>
+            <text x="620" y="248" text-anchor="middle" font-size="10" fill="#64748b">2033</text>
+            <text x="690" y="248" text-anchor="middle" font-size="10" fill="#64748b">2034</text>
+            <polyline fill="none" stroke="#1a56db" stroke-width="2.5" stroke-dasharray="7,3"
+              points="60,190 130,178 200,165 270,150 340,135 410,118 480,100 550,84 620,68 690,52"/>
+            <polyline fill="none" stroke="#f97316" stroke-width="2.5" stroke-dasharray="7,3"
+              points="60,204 130,194 200,183 270,170 340,157 410,143 480,128 550,113 620,98 690,83"/>
+            <g fill="#1a56db">
+              <circle cx="60"  cy="190" r="4"/><circle cx="130" cy="178" r="4"/><circle cx="200" cy="165" r="4"/>
+              <circle cx="270" cy="150" r="4"/><circle cx="340" cy="135" r="4"/><circle cx="410" cy="118" r="4"/>
+              <circle cx="480" cy="100" r="4"/><circle cx="550" cy="84"  r="4"/><circle cx="620" cy="68"  r="4"/>
+              <circle cx="690" cy="52"  r="4"/>
+            </g>
+            <g fill="#f97316">
+              <circle cx="60"  cy="204" r="4"/><circle cx="130" cy="194" r="4"/><circle cx="200" cy="183" r="4"/>
+              <circle cx="270" cy="170" r="4"/><circle cx="340" cy="157" r="4"/><circle cx="410" cy="143" r="4"/>
+              <circle cx="480" cy="128" r="4"/><circle cx="550" cy="113" r="4"/><circle cx="620" cy="98"  r="4"/>
+              <circle cx="690" cy="83"  r="4"/>
+            </g>
+            <line x1="610" y1="18" x2="630" y2="18" stroke="#1a56db" stroke-width="2.5" stroke-dasharray="6,3"/>
+            <text x="633" y="21" font-size="10" fill="#334155">Houses</text>
+            <line x1="668" y1="18" x2="688" y2="18" stroke="#f97316" stroke-width="2.5" stroke-dasharray="6,3"/>
+            <text x="691" y="21" font-size="10" fill="#334155">Units</text>
+          </svg>
+        </div>
+      </div><!-- /container -->
+
+      <!-- ══════════════════════════════════════════
+           SECTION 2 — Suburb Spotlight: The Ponds
+           (replaces old Real-median-houseprices.png)
+      ══════════════════════════════════════════ -->
       <div class="container">
         <h2>Historical and Modern Trends</h2>
-        <div class="card">
-          <img src="Real-median-houseprices.png" alt="Real median house prices over 30 years" style="width:100%; max-width:700px; height:auto; display:block; margin:0 auto 1rem;">
-          <p>This graph details the growing median house prices in capital cities across Australia, showing how unaffordable Sydney has become compared to all other states by a considerable margin.</p>
-        </div>
-      </div>
 
+        <!-- Suburb Spotlight card -->
+        <div class="suburb-spotlight">
+          <h2 style="text-align:center;">Suburb Spotlight: The Ponds NSW 2769</h2>
+          <p class="suburb-sub">A snapshot of North-West Sydney's growth corridor — one of Sydney's newer master-planned communities.</p>
+
+          <div class="suburb-inner">
+            <!-- Metric cards -->
+            <div class="metrics-grid" style="grid-template-columns: repeat(2, 160px);">
+              <div class="metric-card">
+                <span class="metric-value">$1.56M</span>
+                <span class="metric-label">Median House Price (2024)</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value" style="color:#16a34a;">+41%</span>
+                <span class="metric-label">5-Year Growth</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value">$700/wk</span>
+                <span class="metric-label">Median Rent</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value">0.8%</span>
+                <span class="metric-label">Vacancy Rate</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value">3.2%</span>
+                <span class="metric-label">Gross Yield</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value">~28 days</span>
+                <span class="metric-label">Avg Days on Market</span>
+              </div>
+            </div>
+
+            <!-- The Ponds price history chart -->
+            <div class="chart-box" style="flex:1; margin-bottom:0;">
+              <h3>The Ponds: Price History 2012–2024</h3>
+              <svg viewBox="0 0 460 220" class="line-chart-svg" xmlns="http://www.w3.org/2000/svg">
+                <rect x="40" y="10" width="410" height="170" fill="#fefce8" opacity="0.5" rx="4"/>
+                <line x1="40" y1="30"  x2="450" y2="30"  stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="40" y1="62"  x2="450" y2="62"  stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="40" y1="94"  x2="450" y2="94"  stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="40" y1="126" x2="450" y2="126" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="40" y1="158" x2="450" y2="158" stroke="#e2e8f0" stroke-width="1"/>
+                <text x="35" y="33"  text-anchor="end" font-size="9" fill="#64748b">$1.60M</text>
+                <text x="35" y="65"  text-anchor="end" font-size="9" fill="#64748b">$1.40M</text>
+                <text x="35" y="97"  text-anchor="end" font-size="9" fill="#64748b">$1.10M</text>
+                <text x="35" y="129" text-anchor="end" font-size="9" fill="#64748b">$900K</text>
+                <text x="35" y="161" text-anchor="end" font-size="9" fill="#64748b">$600K</text>
+                <!-- x labels -->
+                <text x="40"  y="200" text-anchor="middle" font-size="9" fill="#64748b">2012</text>
+                <text x="72"  y="200" text-anchor="middle" font-size="9" fill="#64748b">2013</text>
+                <text x="104" y="200" text-anchor="middle" font-size="9" fill="#64748b">2014</text>
+                <text x="136" y="200" text-anchor="middle" font-size="9" fill="#64748b">2015</text>
+                <text x="168" y="200" text-anchor="middle" font-size="9" fill="#64748b">2016</text>
+                <text x="200" y="200" text-anchor="middle" font-size="9" fill="#64748b">2017</text>
+                <text x="232" y="200" text-anchor="middle" font-size="9" fill="#64748b">2018</text>
+                <text x="264" y="200" text-anchor="middle" font-size="9" fill="#64748b">2019</text>
+                <text x="296" y="200" text-anchor="middle" font-size="9" fill="#64748b">2020</text>
+                <text x="328" y="200" text-anchor="middle" font-size="9" fill="#64748b">2021</text>
+                <text x="360" y="200" text-anchor="middle" font-size="9" fill="#64748b">2022</text>
+                <text x="392" y="200" text-anchor="middle" font-size="9" fill="#64748b">2023</text>
+                <text x="424" y="200" text-anchor="middle" font-size="9" fill="#64748b">2024</text>
+                <!-- Line: The Ponds prices -->
+                <polyline fill="none" stroke="#ca8a04" stroke-width="2.5"
+                  points="40,152 72,146 104,136 136,118 168,110 200,100 232,96 264,104 296,108 328,60 360,82 392,72 424,32"/>
+                <g fill="#ca8a04">
+                  <circle cx="40"  cy="152" r="3.5"/>
+                  <circle cx="72"  cy="146" r="3.5"/>
+                  <circle cx="104" cy="136" r="3.5"/>
+                  <circle cx="136" cy="118" r="3.5"/>
+                  <circle cx="168" cy="110" r="3.5"/>
+                  <circle cx="200" cy="100" r="3.5"/>
+                  <circle cx="232" cy="96"  r="3.5"/>
+                  <circle cx="264" cy="104" r="3.5"/>
+                  <circle cx="296" cy="108" r="3.5"/>
+                  <circle cx="328" cy="60"  r="3.5"/>
+                  <circle cx="360" cy="82"  r="3.5"/>
+                  <circle cx="392" cy="72"  r="3.5"/>
+                  <circle cx="424" cy="32"  r="3.5"/>
+                </g>
+              </svg>
+            </div>
+          </div><!-- /suburb-inner -->
+        </div><!-- /suburb-spotlight -->
+
+        <!-- Sydney Annual Property Price History table -->
+        <div class="chart-box">
+          <h3>Sydney Annual Property Price History</h3>
+          <div style="overflow-x:auto;">
+            <table class="price-table">
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th>Houses (Median)</th>
+                  <th>Annual Change</th>
+                  <th>Units (Median)</th>
+                  <th>Annual Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>2000</strong></td><td>$300K</td><td>—</td><td>$230K</td><td>—</td></tr>
+                <tr><td><strong>2001</strong></td><td>$330K</td><td class="pos">+10.0%</td><td>$252K</td><td class="pos">+9.6%</td></tr>
+                <tr><td><strong>2002</strong></td><td>$380K</td><td class="pos">+15.2%</td><td>$290K</td><td class="pos">+15.1%</td></tr>
+                <tr><td><strong>2003</strong></td><td>$450K</td><td class="pos">+18.4%</td><td>$340K</td><td class="pos">+17.2%</td></tr>
+                <tr><td><strong>2004</strong></td><td>$470K</td><td class="pos">+4.4%</td><td>$355K</td><td class="pos">+4.4%</td></tr>
+                <tr><td><strong>2005</strong></td><td>$480K</td><td class="pos">+2.1%</td><td>$360K</td><td class="pos">+1.4%</td></tr>
+                <tr><td><strong>2006</strong></td><td>$490K</td><td class="pos">+2.1%</td><td>$365K</td><td class="pos">+1.4%</td></tr>
+                <tr><td><strong>2007</strong></td><td>$525K</td><td class="pos">+7.1%</td><td>$385K</td><td class="pos">+5.5%</td></tr>
+                <tr><td><strong>2008</strong></td><td>$540K</td><td class="pos">+2.9%</td><td>$390K</td><td class="pos">+1.3%</td></tr>
+                <tr><td><strong>2009</strong></td><td>$560K</td><td class="pos">+3.7%</td><td>$400K</td><td class="pos">+2.6%</td></tr>
+                <tr><td><strong>2010</strong></td><td>$620K</td><td class="pos">+10.7%</td><td>$450K</td><td class="pos">+12.5%</td></tr>
+                <tr><td><strong>2011</strong></td><td>$640K</td><td class="pos">+3.2%</td><td>$460K</td><td class="pos">+2.2%</td></tr>
+                <tr><td><strong>2012</strong></td><td>$650K</td><td class="pos">+1.6%</td><td>$465K</td><td class="pos">+1.1%</td></tr>
+                <tr><td><strong>2013</strong></td><td>$720K</td><td class="pos">+10.8%</td><td>$510K</td><td class="pos">+9.7%</td></tr>
+                <tr><td><strong>2014</strong></td><td>$830K</td><td class="pos">+15.3%</td><td>$590K</td><td class="pos">+15.7%</td></tr>
+                <tr><td><strong>2015</strong></td><td>$980K</td><td class="pos">+18.1%</td><td>$680K</td><td class="pos">+15.3%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NSW Regions Bar Chart -->
+        <div class="chart-box">
+          <h3>NSW Regions: Median House Price Comparison (2024)</h3>
+          <p class="chart-sub">Sydney vs broader NSW housing market</p>
+          <div class="bar-chart-wrap">
+            <div class="bar-chart">
+              <!-- Heights mapped proportionally: max $2.7M → 180px -->
+              <div class="bar-group">
+                <div class="bar" style="height:148px;background:#ef4444;" title="$2.2M"></div>
+                <div class="bar-label">Sydney CBD &amp; East</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:180px;background:#ef4444;" title="$2.7M"></div>
+                <div class="bar-label">Lower North Shore</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:120px;background:#3b82f6;" title="$1.8M"></div>
+                <div class="bar-label">Inner West</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:160px;background:#ef4444;" title="$2.4M"></div>
+                <div class="bar-label">Northern Beaches</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:110px;background:#3b82f6;" title="$1.65M"></div>
+                <div class="bar-label">Hills District</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:58px;background:#22c55e;" title="$870K"></div>
+                <div class="bar-label">Western Sydney</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:52px;background:#22c55e;" title="$780K"></div>
+                <div class="bar-label">South-West Sydney</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:62px;background:#22c55e;" title="$930K"></div>
+                <div class="bar-label">Penrith/Blue Mtns</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:72px;background:#3b82f6;" title="$1.08M"></div>
+                <div class="bar-label">Newcastle</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:65px;background:#3b82f6;" title="$975K"></div>
+                <div class="bar-label">Wollongong</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height:68px;background:#3b82f6;" title="$1.02M"></div>
+                <div class="bar-label">Central Coast</div>
+              </div>
+            </div>
+            <!-- colour legend -->
+            <div style="display:flex;gap:1.2rem;margin-top:.5rem;font-size:.8rem;color:#475569;">
+              <span><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:2px;margin-right:4px;vertical-align:middle;"></span>Premium (&gt;$2M)</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:2px;margin-right:4px;vertical-align:middle;"></span>Mid-range ($1M–$2M)</span>
+              <span><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:2px;margin-right:4px;vertical-align:middle;"></span>Affordable (&lt;$1M)</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /container -->
+
+      <!-- ══════════════════════════════════════════
+           SECTION 3 — Future Predictions (UNCHANGED)
+      ══════════════════════════════════════════ -->
       <div class="container">
         <h2>Future Predictions</h2>
         <div class="card">
@@ -74,6 +633,15 @@
         toggle.setAttribute('aria-expanded', open);
         toggle.textContent = open ? '✕' : '☰';
       });
+
+      function showChart(type, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['all','houses','units','forecast'].forEach(id => {
+          const el = document.getElementById('chart-' + id);
+          if (el) el.style.display = (id === type) ? 'block' : 'none';
+        });
+      }
     </script>
 
   </body>
